@@ -1,8 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define ROWS 12
-#define COLUMNS 12
+#define ROWS 15
+#define COLUMNS 15
+/*
+prototipo della funzione max
+Parametri:
+	unsigned int a: primo numero da confrontare
+	unsigned int b: secondo numero da confrontare
+Uscita:
+	unsigned int: restituisce il maggiore tra a e b*/
+unsigned int max(unsigned int a,unsigned int b);
 /*
 prototipo della funzione bestValue
 Parametri:
@@ -27,9 +35,9 @@ int main () {
         unsigned int a[ROWS][COLUMNS];// = {{1, 2, 3}, {7, 6, 12}, {8, 5, 4}};
         for (int i=0;i<ROWS;i++) for (int j=0;j<ROWS;j++) a[i][j]=(rand() % 99)+1;
 	puts("\nLa matrice in cui ricercare il percorso più vantaggioso è:\n");
-	//printArray(a);
+	printArray(a);
 	printf ("\nIl bottino totale è: %d\n",bestValue(a,0,0));
-	//printPath (a,bestValue(a,0,0)); 
+	printPath (a,bestValue(a,0,0)); 
 	return 0;
 }
 
@@ -39,7 +47,8 @@ unsigned int bestValue (unsigned int a[ROWS][COLUMNS],size_t x, size_t y) {
 	if (x == COLUMNS-1) for (size_t i=y+1;i<ROWS;i++) total+=a[i][x];
 	else if (y == ROWS-1) for (size_t i=x+1;i<COLUMNS;i++) total+=a[y][i];
 	//RICORSIONE
-	else total+=(bestValue(a,(x+1),y))>=(bestValue(a,x,(y+1)))?bestValue(a,x+1,y):bestValue(a,x,y+1);
+	else total+=max(bestValue(a,x+1,y),bestValue(a,x,y+1));
+	//else total+=(bestValue(a,(x+1),y))>=(bestValue(a,x,(y+1)))?bestValue(a,x+1,y):bestValue(a,x,y+1);
 	return total;
 }
 
@@ -52,12 +61,16 @@ void printArray(unsigned int a[ROWS][COLUMNS]){
 }
 
 void printPath (unsigned int a[ROWS][COLUMNS],unsigned int total) {
-	int x=0,y=0;
-	printf("Il percorso ottimale è: %d-",a[0][0]);
-	for (int i=0;i<(ROWS+COLUMNS-3);i++) {
+	size_t x=0,y=0;
+	printf("Il percorso ottimale è:\n %3d",a[0][0]);
+	for (size_t i=0;i<(ROWS+COLUMNS-3);i++) {
 		if (total-a[y][x]==bestValue(a,x,y+1)) total-=a[y++][x];
 		else total-=a[y][x++];
-		printf("%d-",a[y][x]);
+		printf("%3d",a[y][x]);
 	}
-	printf ("%d\n\n",a[ROWS-1][COLUMNS-1]);
+	printf ("%3d\n\n",a[ROWS-1][COLUMNS-1]);
+}
+
+unsigned int max (unsigned int a, unsigned int b) {
+	return (a>b)?a:b;
 }
